@@ -1,0 +1,40 @@
+services:
+  # --- 1. Configurar servicio de la aplicación Laravel ---
+  app:
+    # Construir la imagen desde el Dockerfile en el directorio actual
+    build: .
+    container_name: todo_app
+    ports:
+      # Mapear el puerto local 8000 al puerto 80 del contenedor (Apache)
+      - "8000:80"
+    volumes:
+      # Montar código local dentro del contenedor
+      - .:/var/www/html
+      # Desmontar el directorio vendor para usar el incluido en la imagen
+      # Evitar que las dependencias locales sobrescriban las del contenedor
+      - /var/www/html/vendor
+    depends_on:
+      # Esperar a que el servicio 'db' esté listo
+      - db
+
+  # --- 2. Configurar servicio de base de datos MySQL ---
+  db:
+    # Usar la imagen oficial de MySQL 8.0
+    image: mysql:8.0
+    container_name: todo_db
+    restart: always
+    environment:
+      # Establecer el nombre de la base de datos y la contraseña root
+      MYSQL_DATABASE: todo_app
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      # Mapear el puerto local 33066 al 3306 del contenedor
+      # Permitir conectar un cliente DB 
+      - "33066:3306"
+    volumes:
+      # Guardar los datos de la base en tu máquina local
+      - db_data:/var/lib/mysql
+
+# --- Crear volumen con nombre para guardar datos ---
+volumes:
+  db_data:
