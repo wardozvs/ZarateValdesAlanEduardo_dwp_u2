@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
 
 # 2. Habilitar mod_rewrite de Apache para las URLs de Laravel
 RUN a2enmod rewrite
+COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
 # 3. Obtener la ultima versión de Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
